@@ -21,7 +21,7 @@ It analyzes the frame with AI and responds with accurate, confident answers — 
 Here’s a visual overview of Aura’s full-stack architecture:
 
 <p align="center">
-  <img src="./assets/aura-architecture.png" alt="Aura System Architecture" width="800"/>
+  <img src="./assetts/architecture.png" alt="Aura System Architecture" width="800"/>
 </p>
 
 
@@ -130,7 +130,7 @@ For every user query, Aura sends:
 
 ## 🎥 Demo
 
-👉 **Watch the full walkthrough video:** [📺 Google Drive Demo Link](https://your-drive-link-here.com)
+👉 **Watch the full walkthrough video:** [📺 Google Drive Demo Link](https://drive.google.com/file/d/1HeL1yCGHQS6S_rS5jxug7HG0Da_UdaOj/view?usp=sharing)
 
 ---
 
