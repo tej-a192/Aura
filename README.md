@@ -1,10 +1,10 @@
-# 🧠 Aura: Real-Time Visual Assistant for the Visually Impaired
+# AURA: Real-Time Visual Assistant for the Visually Impaired
 
 Aura is a voice-based, AI-powered assistant that helps visually impaired users understand their surroundings using a webcam. It uses object detection, OCR, and Gemini LLM to answer questions about the scene — just like a human would.
 
 ---
 
-## 🚀 What is Aura?
+## What is Aura?
 
 Aura captures a **live frame** from a webcam whenever a user asks something like:
 
@@ -12,11 +12,11 @@ Aura captures a **live frame** from a webcam whenever a user asks something like
 > "Where is the door?"  
 > "What does that label say?"
 
-It analyzes the frame with AI and responds with accurate, confident answers — **using memory**, **intelligent inference**, and **spoken output**.
+It analyzes the frame with AI and responds with accurate, confident answers — using memory, intelligent inference, and spoken output.
 
 ---
 
-## 🔧 Architecture
+## Architecture
 
 Here’s a visual overview of Aura’s full-stack architecture:
 
@@ -24,129 +24,132 @@ Here’s a visual overview of Aura’s full-stack architecture:
   <img src="./assetts/architecture.png" alt="Aura System Architecture" width="800"/>
 </p>
 
-
-## 🧰 Tech Stack
-
-| Layer              | Technologies                                                                 |
-|-------------------|-------------------------------------------------------------------------------|
-| 👁️ Visual Processing | ![Python](https://img.shields.io/badge/-Python-blue?logo=python) `YOLOv8`, `EasyOCR` |
-| 🧠 LLM Reasoning     | ![Gemini](https://img.shields.io/badge/-Gemini_API-purple) (Text-only, Basic Key) |
-| 🧩 Backend API       | ![Node.js](https://img.shields.io/badge/-Node.js-green?logo=node.js) `Express.js` |
-| 🗃️ Data Storage       | ![MongoDB](https://img.shields.io/badge/-MongoDB-teal?logo=mongodb) |
-| 🌐 Frontend UI       | ![React](https://img.shields.io/badge/-React-blue?logo=react) + `SpeechRecognition` |
-| 🔊 Voice            | `SpeechSynthesis`, `Web Speech API`                                         |
+This architecture shows how the user’s voice triggers the system, which captures the camera frame, processes it via Python (YOLO + EasyOCR), constructs a smart prompt, and gets a natural response from Gemini — all in real-time.
 
 ---
 
-## 🎯 Core Features
+## Tech Stack
 
-### 🔹 1. Real-Time Scene Understanding
-> Captures a webcam frame and describes what’s visible
+| Layer              | Technologies                                           |
+|-------------------|--------------------------------------------------------|
+| Visual Processing | Python, YOLOv8, EasyOCR                                |
+| LLM Reasoning     | Gemini API (Text-only, Basic Key)                      |
+| Backend API       | Node.js, Express.js                                    |
+| Data Storage      | MongoDB                                                |
+| Frontend UI       | React, Web Speech API (SpeechRecognition, SpeechSynthesis) |
 
-**Example**:  
+---
+
+## Core Features
+
+### 1. Real-Time Scene Understanding
+
+Captures a webcam frame and describes what’s visible.
+
+**Example:**  
 **User**: “What do you see?”  
 **Aura**: “There is a laptop in the center, a bottle on the left, and a chair behind the table.”
 
 ---
 
-### 🔹 2. OCR + LLM Inference
-> Reads visible text and answers smartly
+### 2. OCR + LLM Inference
 
-**Example**:  
-- Text Detected: `"Mucaine Gd"`  
-- LLM infers: “It is likely Mucaine Gel, an antacid used for heartburn and gas.”
+Reads visible text and intelligently interprets it.
 
-Aura **never says the raw OCR text** — it speaks like a human would.
+**Example:**  
+**User Query**: What is this?  
+**OCR Extracted**: `["Mucaine Gd", "Yio"]`  
+**Aura's Response**: "This appears to be Mucaine Gel, a syrup used for acidity."
 
----
-
-### 🔹 3. Short-Term Visual Memory
-> Understands follow-up questions like “Now?” or “Where is it?”
-
-- If user asked: "Where is the door?"  
-- Aura replies: "No door found. Please move the camera."  
-- Later:  
-  **User**: “Now?”  
-  **Aura**: “The door is on the right side of the frame.”
+Aura never says the raw OCR text — it speaks like a human would.
 
 ---
 
-### 🔹 4. Query-Triggered Intelligence
-> Aura only analyzes the scene **after a user asks a question**
+### 3. Short-Term Visual Memory
 
-✅ Reduces computation  
-✅ Makes it feel human-aware
+Understands follow-up questions like “Now?” or “Where is it?” without re-stating the full query.
 
----
+**Scenario:**
 
-### 🔹 5. End Session (Cleanup)
-> User clicks "End Session" → deletes all MongoDB data and resets memory.
-
----
-
-## 🧠 LLM Prompt Strategy (Chain of Thought)
-
-Aura uses a **smart CoT prompt** that behaves like this:
-
-| Condition                      | Result |
-|-------------------------------|--------|
-| User asks about scene/text    | Uses object + OCR context |
-| User asks general question    | Answers with general knowledge |
-| OCR is messy or noisy         | LLM **guesses** what it actually refers to |
-
-Example:
-```plaintext
-USER QUERY: What is this?
-OCR: ["Mucaine Gd", "Yio"]
-LLM OUTPUT: "This appears to be Mucaine Gel, a syrup used for acidity."
+- **User**: "Where is the door?"  
+- **Aura**: "No door found. Please move the camera."  
+- (User adjusts view)  
+- **User**: "Now?"  
+- **Aura**: "The door is on the right side of the frame."
 
 ---
 
-## 📸 Input Handling
+### 4. Query-Triggered Intelligence
 
-Aura uses `cv2.VideoCapture(0)` to grab a **live webcam frame** for every voice query.
+Aura only analyzes the scene after a user asks a question.
 
-- It does **not** stream continuously
-- It captures **only one frame** when the user speaks
-
-This keeps the system lightweight and efficient, especially for low-resource devices.
+- Reduces computation  
+- Makes the interaction feel natural
 
 ---
 
-## 📦 What’s Sent to Gemini?
+### 5. End Session Cleanup
 
-For every user query, Aura sends:
-
-- 📦 **Object list** with positions (e.g., `"door": right, far`)
-- 🔤 **OCR extracted text** (used internally — not shown to user)
-- 💬 **2–3 previous conversation turns** for context
-- ❓ **Current user query**
-- 🔁 **Prompt instruction**: "Use context only if relevant to the query"
-
-✅ If the question is about the environment → LLM uses the context  
-✅ If the question is general → LLM answers intelligently, **without saying 'this is not related'**
+User can click “End Session” to clear session memory from MongoDB and reset Aura’s state.
 
 ---
 
-## 🎥 Demo
+## LLM Prompt Strategy
 
-👉 **Watch the full walkthrough video:** [📺 Google Drive Demo Link](https://drive.google.com/file/d/1HeL1yCGHQS6S_rS5jxug7HG0Da_UdaOj/view?usp=sharing)
+Aura uses a Chain-of-Thought (CoT) prompt pattern that adapts its behavior based on context:
 
----
-
-## 🧠 Summary
-
-Aura is an intelligent, vision-powered assistant that:
-
-- 🧠 Uses AI to answer questions based on **live camera input**
-- 👁️ Detects objects, reads text, and infers what the scene means
-- 🧩 Understands **follow-up questions** using short-term memory
-- 🎤 Responds via voice in a human-like way
-- 💾 Stores each query session in MongoDB with cleanup capability
-- 🔗 Combines React + Node.js + Python + Gemini API in a modular, scalable architecture
+| Condition                   | Behavior                          |
+|----------------------------|-----------------------------------|
+| User asks about scene/text | Uses visual and OCR context       |
+| User asks general question | Answers with general knowledge    |
+| OCR is messy or noisy      | LLM infers and answers confidently|
 
 ---
 
-✨ Developed not just as a demo — but as a real-world tool to assist and empower visually impaired users.  
-**Built with empathy. Shipped with tech. Ready for impact.**
+## Input Handling
 
+Aura uses `cv2.VideoCapture(0)` to grab a live webcam frame for every voice query.
+
+- It does not stream continuously  
+- It captures only one frame when the user speaks
+
+This ensures the system is efficient and responsive on any device.
+
+---
+
+## What’s Sent to Gemini
+
+Each user query includes:
+
+- Object list with position and distance (e.g., `"door": right, far`)  
+- OCR extracted text  
+- Last 2–3 turns of conversation history  
+- Current user query  
+- Instructions to use context only if relevant
+
+Aura never tells the user what the raw OCR was — it always gives a clean, confident answer.
+
+---
+
+## Demo
+
+Watch the full walkthrough:  
+[Google Drive Demo Link](https://drive.google.com/file/d/1HeL1yCGHQS6S_rS5jxug7HG0Da_UdaOj/view?usp=sharing)
+
+---
+
+## Summary
+
+Aura is a full-stack, real-time, voice-powered AI assistant that:
+
+- Uses computer vision + OCR to understand the user’s environment  
+- Responds using Gemini LLM, with memory and intelligent follow-up  
+- Speaks naturally via Web Speech API  
+- Stores session data in MongoDB with cleanup support  
+- Built using modular architecture with React, Node.js, and Python  
+
+---
+
+Built with empathy.  
+Shipped with tech.  
+Ready for real-world impact.
