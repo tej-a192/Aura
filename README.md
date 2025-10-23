@@ -1,5 +1,13 @@
 # AURA: Real-Time Visual Assistant for the Visually Impaired
 
+---
+
+# Demo
+
+Watch the full walkthrough:  
+[Google Drive Demo Link](https://drive.google.com/file/d/1HeL1yCGHQS6S_rS5jxug7HG0Da_UdaOj/view?usp=sharing)
+
+
 Aura is a voice-based, AI-powered assistant that helps visually impaired users understand their surroundings using a webcam. It uses object detection, OCR, and Gemini LLM to answer questions about the scene — just like a human would.
 
 ---
@@ -131,10 +139,6 @@ Aura never tells the user what the raw OCR was — it always gives a clean, conf
 
 ---
 
-## Demo
-
-Watch the full walkthrough:  
-[Google Drive Demo Link](https://drive.google.com/file/d/1HeL1yCGHQS6S_rS5jxug7HG0Da_UdaOj/view?usp=sharing)
 
 ---
 
